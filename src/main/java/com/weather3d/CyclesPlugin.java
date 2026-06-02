@@ -30,6 +30,10 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Set;
+import net.runelite.api.WorldEntity;
+import net.runelite.api.WorldView;
+import net.runelite.api.coords.LocalPoint;
 
 import static com.weather3d.CyclesConfig.SeasonType.DYNAMIC;
 import static com.weather3d.CyclesConfig.SeasonType.HD_117;
@@ -76,6 +80,10 @@ public class CyclesPlugin extends Plugin
 	private final int MODEL_TRANSPARENT_SWAP_DISTANCE = 3000;
 	private final int MODEL_DISAPPEAR_DISTANCE = 2500;
 	private final int FOG_RADIUS = 100;
+	private static final Set<Integer> SAILING_BOAT_WORLD_ENTITY_TYPES = Set.of(1, 2, 3);
+	private static final Set<Integer> SAILING_ARCTIC_REGIONS = Set.of();
+	private static final Set<Integer> SAILING_SWAMP_REGIONS = Set.of();
+
 
 	@Getter
 	private Season currentSeason = Season.SPRING;
@@ -1025,8 +1033,17 @@ public class CyclesPlugin extends Plugin
 	private void syncBiome()
 	{
 		Player player = client.getLocalPlayer();
-		if (player == null)
+		if (player == null || player.getLocalLocation() == null)
+		{
 			return;
+		}
+
+		if (isOnSailingBoat())
+		{
+			currentBiome = getSailingBiome();
+			savedChunk = -1;
+			return;
+		}
 
 		WorldPoint wp = WorldPoint.fromLocalInstance(client, player.getLocalLocation(), client.getPlane());
 		int playerChunk = wp.getRegionID();
@@ -1036,6 +1053,79 @@ public class CyclesPlugin extends Plugin
 			currentBiome = BiomeChunkMap.checkBiome(playerChunk);
 			savedChunk = playerChunk;
 		}
+	}
+
+	private boolean isOnSailingBoat()
+	{
+		Player player = client.getLocalPlayer();
+		if (player == null || player.getWorldView() == null || player.getWorldView().isTopLevel())
+		{
+			return false;
+		}
+
+		WorldEntity worldEntity = client.getTopLevelWorldView()
+				.worldEntities()
+				.byIndex(player.getWorldView().getId());
+
+		return worldEntity != null && SAILING_BOAT_WORLD_ENTITY_TYPES.contains(worldEntity.getConfig().getId());
+	}
+
+	private Biome getSailingBiome()
+	{
+		WorldPoint wp = getTopLevelWorldPoint();
+		if (wp == null)
+		{
+			return Biome.TROPICAL;
+		}
+
+		int regionId = wp.getRegionID();
+
+
+		if (SAILING_ARCTIC_REGIONS.contains(regionId))
+		{
+			return Biome.ARCTIC;
+		}
+
+		if (SAILING_SWAMP_REGIONS.contains(regionId))
+		{
+			return Biome.SWAMP;
+		}
+
+		Biome mappedBiome = BiomeChunkMap.checkBiome(regionId);
+		if (mappedBiome != Biome.CAVE && mappedBiome != Biome.LAVA_CAVE)
+		{
+			return mappedBiome;
+		}
+
+		return Biome.TROPICAL;
+	}
+
+	private WorldPoint getTopLevelWorldPoint()
+	{
+		Player player = client.getLocalPlayer();
+		if (player == null || player.getWorldView() == null || player.getLocalLocation() == null)
+		{
+			return null;
+		}
+
+		WorldView worldView = player.getWorldView();
+		LocalPoint localPoint = player.getLocalLocation();
+
+		if (!worldView.isTopLevel())
+		{
+			WorldEntity worldEntity = client.getTopLevelWorldView()
+					.worldEntities()
+					.byIndex(worldView.getId());
+
+			if (worldEntity == null)
+			{
+				return null;
+			}
+
+			localPoint = worldEntity.transformToMainWorld(localPoint);
+		}
+
+		return WorldPoint.fromLocal(client, localPoint);
 	}
 
 	private void syncSeason()
