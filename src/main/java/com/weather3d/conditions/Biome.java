@@ -9,7 +9,7 @@ import java.awt.image.BufferedImage;
 public enum Biome
 {
     ARCTIC("Arctic", "/Biome - Arctic.png", "/Biome - Arctic - Mini.png"),
-    ARCTIC_OCEAN("Arctic Ocean", "/Biome - Arctic.png", "/Biome - Arctic - Mini.png"),
+    ARCTIC_OCEAN("Arctic Ocean", "/Biome - Arctic Ocean.png", "/Biome - Arctic Ocean - Mini.png"),
     BARRENS("Barrens", "/Biome - Barrens.png", "/Biome - Barrens - Mini.png"),
     CAVE("Caves", "/Biome - Cave.png", "/Biome - Cave - Mini.png"),
     COSMOS("Cosmos", "/Biome - Cosmos.png", "/Biome - Cosmos - Mini.png"),
@@ -18,7 +18,7 @@ public enum Biome
     GRASSLAND("Grassland", "/Biome - Grassland.png", "/Biome - Grassland - Mini.png"),
     LAVA_CAVE("Lava Caves", "/Biome - Lava Cave.png", "/Biome - Lava Cave - Mini.png"),
     MOUNTAIN("Mountains", "/Biome - Mountain.png", "/Biome - Mountain - Mini.png"),
-    OCEAN("Ocean", "/Biome - Tropical.png", "/Biome - Tropical - Mini.png"),
+    OCEAN("Ocean", "/Biome - Ocean.png", "/Biome - Ocean - Mini.png"),
     SWAMP("Swamp", "/Biome - Swamp.png", "/Biome - Swamp - Mini.png"),
     TROPICAL("Tropics", "/Biome - Tropical.png", "/Biome - Tropical - Mini.png"),
     WILDERNESS("Wilderness", "/Biome - Wilderness.png", "/Biome - Wilderness - Mini.png")

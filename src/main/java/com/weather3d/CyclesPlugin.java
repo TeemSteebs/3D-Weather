@@ -81,8 +81,7 @@ public class CyclesPlugin extends Plugin
 	private final int MODEL_DISAPPEAR_DISTANCE = 2500;
 	private final int FOG_RADIUS = 100;
 	private static final Set<Integer> SAILING_BOAT_WORLD_ENTITY_TYPES = Set.of(1, 2, 3);
-	private static final Set<Integer> SAILING_ARCTIC_REGIONS = Set.of();
-	private static final Set<Integer> SAILING_SWAMP_REGIONS = Set.of();
+
 
 
 	@Getter
@@ -1075,29 +1074,10 @@ public class CyclesPlugin extends Plugin
 		WorldPoint wp = getTopLevelWorldPoint();
 		if (wp == null)
 		{
-			return Biome.TROPICAL;
+			return Biome.OCEAN;
 		}
 
-		int regionId = wp.getRegionID();
-
-
-		if (SAILING_ARCTIC_REGIONS.contains(regionId))
-		{
-			return Biome.ARCTIC;
-		}
-
-		if (SAILING_SWAMP_REGIONS.contains(regionId))
-		{
-			return Biome.SWAMP;
-		}
-
-		Biome mappedBiome = BiomeChunkMap.checkBiome(regionId);
-		if (mappedBiome != Biome.CAVE && mappedBiome != Biome.LAVA_CAVE)
-		{
-			return mappedBiome;
-		}
-
-		return Biome.TROPICAL;
+		return BiomeChunkMap.checkBiome(wp.getRegionID());
 	}
 
 	private WorldPoint getTopLevelWorldPoint()
